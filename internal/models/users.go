@@ -20,6 +20,12 @@ type User struct {
 	Created        time.Time
 }
 
+type UserModelInterface interface {
+	Insert(name, email, password string) error
+	Authenticate(email, password string) (int, error)
+	Exists(id int) (bool, error)
+}
+
 // Define a new UserModel type which wraps a database connection pool.
 type UserModel struct {
 	DB *sql.DB
