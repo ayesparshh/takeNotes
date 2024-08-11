@@ -30,11 +30,13 @@ type application struct {
 	templateCache  map[string]*template.Template
 	formDecoder    *form.Decoder
 	sessionManager *scs.SessionManager
+	debug          bool
 }
 
 func main() {
 	addr := flag.String("addr", ":4000", "HTTP network address")
 	dsn := flag.String("dsn", "root:mysecretpw@tcp(localhost:3306)/snippetbox?parseTime=true", "MySQL data source name")
+	debug := flag.Bool("debug", false, "Enable debug mode")
 	flag.Parse()
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
@@ -69,6 +71,7 @@ func main() {
 	// Initialize a models.UserModel instance and add it to the application
 	// dependencies.
 	app := &application{
+		debug:          *debug,
 		errorLog:       errorLog,
 		infoLog:        infoLog,
 		snippets:       &models.SnippetModel{DB: db},
