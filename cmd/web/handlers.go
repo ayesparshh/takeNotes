@@ -316,7 +316,7 @@ func (app *application) accountPasswordUpdatePost(w http.ResponseWriter, r *http
 			data := app.newTemplateData(r)
 			data.Form = form
 			app.render(w, http.StatusUnprocessableEntity, "password.tmpl", data)
-		} else if err != nil {
+		} else {
 			app.serverError(w, err)
 		}
 		return
