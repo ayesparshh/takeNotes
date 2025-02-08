@@ -176,9 +176,8 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	// Because httprouter matches the "/" path exactly, we can now remove the
-	// manual check of r.URL.Path != "/" from this handler.
-	snippets, err := app.snippets.Latest()
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+	snippets, err := app.snippets.Latest(userID)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -250,7 +249,12 @@ func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request
 		app.render(w, http.StatusUnprocessableEntity, "create.tmpl", data)
 		return
 	}
-	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires)
+
+	// Get the current user's ID from the session
+	userID := app.sessionManager.GetInt(r.Context(), "authenticatedUserID")
+
+	// Pass the userID to the Insert method
+	id, err := app.snippets.Insert(form.Title, form.Content, form.Expires, userID)
 	if err != nil {
 		app.serverError(w, err)
 		return
